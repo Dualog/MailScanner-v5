@@ -1113,7 +1113,8 @@ sub SATest_spam
 	my $HighScoreVal = 0.0 + MailScanner::Config::Value(
 		'highspamassassinscore', $Message
 	);
-	if ( $SAHits && $HighScoreVal>0 && ($SAHits+$GSHits >= $HighScoreVal) )
+        # Change value to -1000 to accomodate blacklisting and soft whitelisting
+	if ( $SAHits && $HighScoreVal>-1000 && ($SAHits+$GSHits >= $HighScoreVal) )
 	{
 		$IsItHighScore = 1;
 	}
