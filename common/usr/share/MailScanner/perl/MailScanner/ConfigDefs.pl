@@ -191,6 +191,7 @@ satimeoutlen			= spamassassintimeoutshistory
 removeheaders			= removetheseheaders
 replacetnef			= usetnefcontents
 reqspamassassinscore		= requiredspamassassinscore
+highspamassassinscore           = highspamassassinscore
 sacache				= spamassassincachedatabasefile
 saviwatchfiles                  = monitorsforsophosupdates
 scanmail			= scanmessages
