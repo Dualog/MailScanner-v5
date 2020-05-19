@@ -511,7 +511,7 @@ sub address2userdomain {
 
   if ($addr =~ /@/) {
     $user   =~ s/@[^@]*$//;
-    $domain =~ s/^.*@//;
+    $domain =~ s/^[^@]*@//;
   }
 
   return ($user, $domain);
@@ -810,6 +810,9 @@ sub IsSpam {
     $this->{ishigh} = 1
       if $this->{sascore}+0.0 >=
          MailScanner::Config::Value('highspamassassinscore',$this)+0.0;
+    MailScanner::Log::WarnLog("Spamassassin high %d from %s (%s) to %s is %s (%d)",
+                              $this->{id}, $this->{clientip},
+                              $this->{from}, $todomain, $rblspamheader, MailScanner::Config::Value('highspamassassinscore',$this));
     MailScanner::Log::InfoLog("Message %s from %s (%s) to %s is %s",
                               $this->{id}, $this->{clientip},
                               $this->{from}, $todomain, $rblspamheader)
@@ -2262,6 +2265,9 @@ sub Explode {
 
   return if $this->{deleted};
 
+  # Hack. Don´t explode into parts if we are releasing the email
+  return if $this->{clientip} eq '127.0.0.1';
+
   # Get the translation of MailScanner, we use it a lot
   $mailscannername = MailScanner::Config::LanguageValue($this, 'mailscanner');
 
@@ -3502,7 +3508,7 @@ sub UnpackRar {
   foreach $member2 (@members) {
     $IsEncrypted = 0;
     $HasErrors = 0;
-    #MailScanner::Log::InfoLog("Checking member %s",$member2);
+    MailScanner::Log::InfoLog("Checking member %s",$member2);
     # Test the current file name to see if it's password protected
     # and capture the output. If the command times out, then return
 
@@ -4458,6 +4464,7 @@ sub Clean {
 
   # Work through each filename-based report in turn, 1 per attachment
   while(($file, $text) = each %{$this->{allreports}}) {
+    MailScanner::Log::InfoLog("MailScanner: Cleaning file %s", $file);
 
     #print STDERR "Cleaning $file\n";
     $this->{bodymodified} = 1; # This message body has been changed in memory
