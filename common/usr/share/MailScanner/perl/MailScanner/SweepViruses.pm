@@ -1562,6 +1562,7 @@ sub ProcessSophosOutput {
   $logout = $line;
   $logout =~ s/%/%%/g;
   $logout =~ s/\s{20,}/ /g;
+  $logout = $Name . "::" . $logout;
   MailScanner::Log::InfoLog($logout) if $line =~ /error/i;
   # JKF Improved to handle multi-part split archives,
   # JKF which Sophos whinges about
@@ -1617,8 +1618,12 @@ sub ProcessSophosOutput {
   # https://github.com/MailScanner/v5/issues/348
   # Check for absolute path in Sophos Output (forward compatibility)
   $infected =~ s|$BaseDir(?=/)|\.|;
-
-  ($dot, $id, $part, @rest) = split(/\//, $infected);
+ 
+  if ($infected =~ /^\./) {
+    ($dot, $id, $part, @rest) = split(/\//, $infected);
+  } else {
+    ($id, $part) = $infected =~ /.*\/incoming\/\d+\/([^\/]+)\/([^\/]+)/;
+  }
   #system("echo $dot, $id, $part, @rest >> /tmp/jkf");
   #system("echo $infections >> /tmp/jkf");
   my $notype = substr($part,1);
@@ -1691,7 +1696,7 @@ sub ProcessFSecureOutput {
     # The last 3 words are "Infected:" + name of virus + name of scanner
     $line =~ s/: Infected: +(.+) \[.*?\]$//;
     #print STDERR "Line is \"$line\"\n";
-    MailScanner::Log::NoticeLog("Virus Scanning: F-Secure found virus %s", $1);
+    MailScanner::Log::NoticeLog("F-Secure::INFECTED:: %s :: %s", $1, $line);
     # We are now left with the filename, or
     # then archive name followed by the filename within the archive.
     $line =~ s/^\[(.*?)\] .*$/$1/; # Strip signs of an archive
@@ -2071,15 +2076,20 @@ sub ProcessEsetsOutput {
   my ($action) = $c =~ m/\"(.*)\"/;
   my ($info) = $d =~ m/\"(.*)\"/;
 
+  # Return if threat is empty (probably error reading, not a virus)
+  return if $threat eq "";
+
   my ($dot, $id, $part, @rest) = split(/\//, $filename);
   my $file = substr($part,1);
 
   if($info == ''){ $info = 'none'; }
 
   my $report = "Esets: found $threat in $file";
+    $report .= "Esets Actions: $action \n";
+    $report .= "Esets Additional Info: $info \n";
   $infections->{"$id"}{"$part"} .= $report . "\n";
   $types->{"$id"}{"$part"} .= "v"; # it's a real virus
-  MailScanner::Log::InfoLog("Esets::INFECTED::$threat");
+  MailScanner::Log::InfoLog("Esets::INFECTED::$threat :: $filename");
   return 1;
 }
 
