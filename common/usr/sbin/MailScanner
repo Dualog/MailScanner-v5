@@ -151,7 +151,7 @@ $SIG{'TERM'} = \&ExitParent;
 #
 # First production release will be 4.00.1.
 #
-$MailScanner::Config::MailScannerVersion = 'VersionNumberHere';
+$MailScanner::Config::MailScannerVersion = '5.3.2';
 
 my $WantHelp          = 0;
 my $Versions          = 0;
@@ -1127,6 +1127,10 @@ sub WorkForHours {
     $0 = 'MailScanner: quarantining infections';
     $batch->QuarantineInfections();
 
+    # Clean all the infections out of the messages
+    $0 = 'MailScanner: cleaning messages';
+    $batch->Clean();
+
     # Deliver all the "silent" infected messages
     # and mark them for deletion
     $0 = 'MailScanner: processing silent viruses';
@@ -1246,8 +1250,8 @@ sub WorkForHours {
     #$batch->FindSilentAndNoisyInfections();
 
     # Clean all the infections out of the messages
-    $0 = 'MailScanner: cleaning messages';
-    $batch->Clean();
+    #$0 = 'MailScanner: cleaning messages';
+    #$batch->Clean();
 
     # Zip up all the attachments to compress them
     $0 = 'MailScanner: compressing attachments';
