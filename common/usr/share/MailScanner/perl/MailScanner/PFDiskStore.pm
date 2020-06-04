@@ -433,7 +433,8 @@ sub WriteHeader {
     rename "$tfile", "$hddirbase/$hddir1/$hddir2/$hdoutfile"
       or MailScanner::Log::DieLog("Cannot rename clean %s to %s, %s",
                                   $tfile, $hdoutfile, $!);
-    MailScanner::Log::InfoLog("Requeue: %s to %s", $message->{id},$hdoutfile);
+    MailScanner::Log::InfoLog("Requeue1: %s to %s", $message->{id},$hdoutfile);
+    MailScanner::Log::InfoLog("filename: %s", "$hddirbase/$hddir1/hddir2/$hdoutfile");
   } elsif ($MailScanner::SMDiskStore::HashDirDepth == 1) {
     ($hddirbase, $hddir1, $hdoutfile) = 
       MailScanner::Sendmail::HDOutFileName($tfile);
@@ -445,7 +446,7 @@ sub WriteHeader {
     rename "$tfile", "$hddirbase/$hddir1/$hdoutfile"
       or MailScanner::Log::DieLog("Cannot rename clean %s to %s, %s",
                                   $tfile, $hdoutfile, $!);
-    MailScanner::Log::InfoLog("Requeue: %s to %s", $message->{id},$hdoutfile);
+    MailScanner::Log::InfoLog("Requeue2: %s to %s", $message->{id},$hdoutfile);
   } elsif ($MailScanner::SMDiskStore::HashDirDepth == 0) {
     ($hddirbase, $hdoutfile) = 
       MailScanner::Sendmail::HDOutFileName($tfile);
@@ -461,7 +462,7 @@ sub WriteHeader {
     rename "$tfile", "$hddirbase/$hdoutfile" # TAINT
       or MailScanner::Log::DieLog("Cannot rename clean %s to %s, %s",
                                   $tfile, $hdoutfile, $!);
-    MailScanner::Log::InfoLog("Requeue: %s to %s", $message->{id},$hdoutfile);
+    MailScanner::Log::InfoLog("Requeue3: %s to %s", $message->{id},$hdoutfile);
   }
 }
 

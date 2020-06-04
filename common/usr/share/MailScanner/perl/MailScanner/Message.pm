@@ -7805,7 +7805,8 @@ sub DisarmEndtagCallback {
 
     if ($alarm ||
         $squashedtext =~ /^(w+|ft+p|fpt+|ma[il]+to)([.,]|\%2e)/i || 
-        $squashedtext =~ /[.,](com|org|net|info|biz|ws)/i ||
+        $squashedtext =~ /[.,](com|org|net|info|biz|ws)$/i ||
+        $squashedtext =~ /[.,](com|org|net|info|biz|ws)[\/\.]/i ||
         $squashedtext =~ /[.,]com?[.,][a-z][a-z]/i ||
         $squashedtext =~ /^(ht+ps?|ft+p|fpt+|mailto|webcal)[:;](\/\/)?(.*(\.|\%2e))/i ||
         $numbertrap) {

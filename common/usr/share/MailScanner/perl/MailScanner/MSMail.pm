@@ -1101,6 +1101,7 @@ sub new {
                   }
                   my $payload = join '', map {sprintf "%d:%s,", length $_, $_} <$queuehandle>, $sender, @recipient;
                   MailScanner::Log::DebugLog("MSMail: payload ready");
+                  #MailScanner::Log::InfoLog("MSMail: payload %s", $payload);
                   eval {
                       $socket->printf ('%d:%s,', length $payload, $payload)
                   };
