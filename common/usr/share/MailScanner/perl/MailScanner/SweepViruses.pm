@@ -2059,7 +2059,7 @@ sub ProcessEsetsOutput {
   chomp $line;
 
   # return if line does not had threat
-  return 0 if $line !~ m/threat/i;
+  return 0 if $line !~ m/result/i;
 
   # password protected
   return 0 if $line =~ m/protected/i;
