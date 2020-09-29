@@ -2122,7 +2122,7 @@ sub ProcessDrwebOutput {
   $report = $Name . ': ' if $Name;
   $infections->{"$id"}{"$part"} .= "$report$notype was infected by $virus" . "\n";
   $types->{"$id"}{"$part"} .= "v"; # it's a real virus
-  MailScanner::Log::InfoLog("DrWeb::INFECTED::$virus");
+  MailScanner::Log::InfoLog("DrWeb::INFECTED::$virus :: $file");
   return 1;
 }
 
