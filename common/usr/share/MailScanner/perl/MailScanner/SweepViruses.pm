@@ -1662,6 +1662,9 @@ sub ProcessFSecureOutput {
     $fsecure_InHeader++;
     return 0;
   }
+  if ($line =~ /result=.*infection=/) {
+	  $fsecure_InHeader++;
+  }
   # This test is more vague than it used to be, but is more tolerant to
   # output changes such as extra headers. Scanning non-scanning data is
   # not a great idea but causes no harm.
@@ -1673,9 +1676,6 @@ sub ProcessFSecureOutput {
   $logout =~ s/%/%%/g;
   $logout =~ s/\s{20,}/ /g;
 
-  # If we are running the new version then there's a totally new parser here
-  # F-Secure 5.5 reports version 1.10
-  if ($fsecure_Version <= 3.0 || $fsecure_Version >= 4.50) {
 
     #./g4UFLJR23090/Keld Jrn Simonsen: Infected: EICAR_Test_File [F-Prot]
     #./g4UFLJR23090/Keld Jrn Simonsen: Infected: EICAR-Test-File [AVP]
@@ -1690,11 +1690,12 @@ sub ProcessFSecureOutput {
     #[./eicar.zip] eicar.com: Infected: EICAR_Test_File [Libra]
     #[./eicar.zip] eicar.com: Infected: EICAR Test File [Orion]
     #[./eicar.zip] eicar.com: Infected: EICAR-Test-File [AVP]
+    # ./eicar.com: result=infected infection=EICAR_Test_File
 
 
-    return 0 unless $line =~ /: Infected: /;
+    return 0 unless $line =~ /result=infected /;
     # The last 3 words are "Infected:" + name of virus + name of scanner
-    $line =~ s/: Infected: +(.+) \[.*?\]$//;
+    $line =~ s/: result=infected infection=(.+)$//;
     #print STDERR "Line is \"$line\"\n";
     MailScanner::Log::NoticeLog("F-Secure::INFECTED:: %s :: %s", $1, $line);
     # We are now left with the filename, or
@@ -1715,37 +1716,7 @@ sub ProcessFSecureOutput {
     return 0 if $fsecure_Seen{$line};
     $fsecure_Seen{$line} = 1;
     return 1;
-  } else {
-    # We are running the old version, so use the old parser
-    # Prefer s/// to m// as less likely to do unpredictable things.
-    # We hope.
-    if ($line =~ /\tinfection:\s/) {
-      # Get to relevant filename in a reasonably but not
-      # totally robust manner (*impossible* to be totally robust
-      # if we have square brackets and spaces in filenames)
-      # Strip archive bits if present
-      $line =~ s/^\[(.*?)\] .+(\tinfection:.*)/$1$2/;
-
-      # Get to the meat or die trying...
-      $line =~ s/\tinfection:([^:]*).*$//
-        or MailScanner::Log::DieLog("Dodgy things going on in F-Secure output:\n$report\n");
-      $virus = $1;
-      $virus =~ s/^\s*(\S+).*$/$1/; # 1st word after Infection: is the virus
-      MailScanner::Log::NoticeLog("Virus Scanning: F-Secure found virus %s",$virus);
-
-      ($dot,$id,$part,@rest) = split(/\//, $line);
-      my $notype = substr($part,1);
-      $logout =~ s/\Q$part\E/$notype/;
-      $report =~ s/\Q$part\E/$notype/;
-
-      MailScanner::Log::InfoLog($logout);
-      $report = $Name . ': ' . $report if $Name;
-      $infections->{"$id"}{"$part"} .= $report . "\n";
-      $types->{"$id"}{"$part"} .= "v"; # so we know what to tell sender
-      return 1;
-    }
     MailScanner::Log::DieLog("Either you've found a bug in MailScanner's F-Secure output parser, or F-Secure's output format has changed! Please mail the author of MailScanner!\n");
-  }
 }
 
 # sub ProcessClamAVOutput {
