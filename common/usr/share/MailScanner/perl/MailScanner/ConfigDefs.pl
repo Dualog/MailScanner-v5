@@ -458,6 +458,7 @@ SAVIDSocket              /var/lib/savdid/savdid.sock
 AddTextOfDoc		0	no	0	yes	1
 AllowExternal		0	no	0	yes	1
 AllowPartial		0	no	0	yes	1
+AllowPassZips		0	no	0	yes	1
 ArchivePublicKeys	0	no	0	yes	1
 blacklistedishigh	0	no	0	yes	1
 bouncemcpasattachment	0	no	0	yes	1
@@ -650,7 +651,6 @@ AllowFormTags		convert	no	0	yes	1	disarm	convert
 allowmultsigs		0	no	0	yes	1
 AllowObjectTags		convert	no	0	yes	1	disarm	convert
 AllowScriptTags		convert	no	0	yes	1	disarm	convert
-AllowPassZips		0	no	0	yes	1
 AllowWebBugTags		convert	no	0	yes	1	disarm	convert
 assumeisdir		1	file	0	directory	1
 attachimage		0	no	0	yes	1
